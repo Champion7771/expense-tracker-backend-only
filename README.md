@@ -142,7 +142,7 @@ MongoDB Atlas was initially planned for hosting. Approximately **3–4 hours** w
 * Authentication (Login/Signup) was not required for this specific assignment.
 * Each expense is associated with a valid existing User ID.
 * The monthly summary is calculated specifically for the current calendar month.
-* Expense categories are strict; custom categories are not currently supported.
+* Expense categories are strict; custom categories are currently supported.
 
 ### Notes
 
