@@ -149,14 +149,3 @@ MongoDB Atlas was initially planned for hosting. Approximately **3–4 hours** w
 * The `.env` file is excluded from version control for security.
 * All API endpoints were manually tested using **Postman**.
 * Clean code practices were followed to ensure a structured backend.
-
----
-
-## AI Usage Declaration (Prompts Used)
-
-AI assistance (LLMs) was used strictly for guidance and troubleshooting in the following areas:
-
-1. **Logic:** Assistance with writing the specific pagination logic.
-2. **Troubleshooting:** Debugging MongoDB Atlas connection issues (approx. 4 hours).
-
-*No code was directly copied; prompts were used solely for conceptual guidance and error resolution.*
