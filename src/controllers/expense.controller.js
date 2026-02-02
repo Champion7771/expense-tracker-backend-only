@@ -1,62 +1,79 @@
-const Expense = require("../models/expense");
-const User = require("../models/user");
+const Expense = require("../models/Expense");
+const User = require("../models/User");
+const mongoose = require("mongoose");
 
-exports.addExpense = async (req, res, next) => {
+exports.addExpense = async (req, res) => {
   try {
-    const userExists = await User.findById(req.body.user);
-    if (!userExists) {
-      return res.status(400).json({ message: "Invalid user ID" });
-    }
-
     const expense = await Expense.create(req.body);
     res.status(201).json(expense);
   } catch (err) {
-    next(err);
+    res.status(400).json({ message: err.message });
   }
 };
 
-exports.getUserExpenses = async (req, res, next) => {
+exports.getUserExpenses = async (req, res) => {
   try {
-    const { page = 1, limit = 5, category } = req.query;
+    const { page = 1, limit = 10, category, startDate, endDate } = req.query;
 
-    const query = { user: req.params.id };
-    if (category) query.category = category;
+    const filter = { user: req.params.id };
 
-    const expenses = await Expense.find(query)
+    if (category) {
+      filter.category = category;
+    }
+
+    if (startDate && endDate) {
+      filter.date = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate)
+      };
+    }
+
+    const expenses = await Expense.find(filter)
+      .sort({ date: -1 })
       .skip((page - 1) * limit)
       .limit(Number(limit));
 
-    res.json(expenses);
+    res.status(200).json(expenses);
   } catch (err) {
-    next(err);
+    res.status(400).json({ message: err.message });
   }
 };
 
-exports.getMonthlySummary = async (req, res, next) => {
-   try {
+exports.getMonthlySummary = async (req, res) => {
+  try {
     const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
     const start = new Date();
     start.setDate(1);
     start.setHours(0, 0, 0, 0);
 
-    const end = new Date(start);
-    end.setMonth(end.getMonth() + 1);
+    const result = await Expense.aggregate([
+      {
+        $match: {
+          user: new mongoose.Types.ObjectId(req.params.id),
+          date: { $gte: start }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalSpent: { $sum: "$amount" },
+          count: { $sum: 1 }
+        }
+      }
+    ]);
 
-    const expenses = await Expense.find({
-      user: user._id,
-      date: { $gte: start, $lt: end },
-    });
-
-    const totalSpent = expenses.reduce((sum, e) => sum + e.amount, 0);
+    const totalSpent = result[0]?.totalSpent || 0;
 
     res.json({
       totalExpenses: totalSpent,
       remainingBudget: user.monthlyBudget - totalSpent,
-      numberOfExpenses: expenses.length,
+      expenseCount: result[0]?.count || 0
     });
-  } catch (err) {
-    next(err);
+  } catch {
+    res.status(400).json({ message: "Invalid request" });
   }
 };

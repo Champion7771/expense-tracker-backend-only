@@ -2,23 +2,25 @@ const mongoose = require("mongoose");
 
 const expenseSchema = new mongoose.Schema(
   {
-    title: {
+    title: { 
       type: String,
-      required: true
-    },
-    amount: {
-      type: Number,
-      required: true,
-      min: 1
-    },
+      required: true },
+
+    amount: { 
+      type: Number, 
+      required: true, 
+      min: 1 },
+
     category: {
       type: String,
-      required: true
-    },
-    date: {
+      required: true,
+      trim: true
+},
+
+    date: { 
       type: Date,
-      default: Date.now
-    },
+      required: true },
+      
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -28,19 +30,14 @@ const expenseSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Middleware
-expenseSchema.pre("save", async function (next) {
+// Middleware: Prevent expense for non-existing user
+expenseSchema.pre("save", async function () {
   const User = mongoose.model("User");
-  const userExists = await User.findById(this.user);
+  const exists = await User.exists({ _id: this.user });
 
-  if (!userExists) {
-    return next(new Error("Cannot add expense for non-existing user"));
+  if (!exists) {
+    throw new Error("User does not exist");
   }
-  if (this.amount <= 0) {
-    return next(new Error("Expense amount must be positive"));
-  }
-
-  next();
 });
 
 module.exports = mongoose.model("Expense", expenseSchema);
