@@ -25,7 +25,7 @@ Create a `.env` file in the root directory with the following content:
 
 ```env
 PORT=3000
-MONGO_URI=mongodb://localhost:27017/expense-tracker
+MONGO_URI=mongodb+srv://akash_123:Billgoldberg@cluster0.zfohrop.mongodb.net/?appName=Cluster0
 
 ```
 
