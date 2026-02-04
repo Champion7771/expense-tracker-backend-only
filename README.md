@@ -47,10 +47,6 @@ The server will run on: `http://localhost:3000`
 To ensure timely completion of the assignment, the project currently uses a **local MongoDB instance**.
 The codebase remains compatible with MongoDB Atlas and can be switched simply by updating the `MONGO_URI` value in the `.env` file.
 
-### Note on MongoDB Atlas
-
-MongoDB Atlas was initially planned for hosting. Approximately **3–4 hours** were spent attempting to connect, including checking IP whitelists, verifying connection strings, and troubleshooting with documentation and AI tools. However, due to network/IP restrictions in the current environment, the connection could not be established.
-
 ---
 
 ## Data Models
